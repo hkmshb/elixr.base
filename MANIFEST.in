@@ -1,0 +1,2 @@
+include *.md *.ini *.cfg *.rst
+recursive-include pylons *.ico *.png *.gif *.jpg *.css *.less *.js *.txt *.html *.xml *.py
