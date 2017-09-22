@@ -1,0 +1,6 @@
+.git*
+.vscode
+*.sqlite
+
+docs
+tests

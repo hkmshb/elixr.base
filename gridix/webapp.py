@@ -1,6 +1,5 @@
 from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.authentication import AuthTktAuthenticationPolicy
 from .api.utils import add_role_principals
 
 

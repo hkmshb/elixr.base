@@ -16,11 +16,11 @@ requires = [
     'marshmallow',
     'marshmallow_sqlalchemy',
     'openpyxl',
+    'psycopg2',
     'python-dateutil',
     'pyramid',
     'pyramid_jinja2',
     'pyramid_jwt',
-    'pyramid_debugtoolbar',
     'pyramid_tm',
     'SQLAlchemy',
     'transaction',
@@ -34,6 +34,10 @@ requires = [
 ]
 
 tests_require = [
+    # dev
+    'pyramid_debugtoolbar',
+
+    # tests
     'WebTest >= 1.3.1',  # py3 compat
     'pytest',            # includes virtualenv
     'pytest-cov',
