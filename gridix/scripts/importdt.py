@@ -14,6 +14,7 @@ from elixr.base import AttrDict
 from ..data.models import get_engine, get_session_factory, get_tm_session
 from ..data.models.network import Voltage, ElectricLine, ElectricStation
 from ..export.importer import MegaImporter
+from ..utils import DIR_UPLOADS
 
 
 
@@ -28,11 +29,11 @@ def _process(db, options):
     importer = MegaImporter(AttrDict(db=db, cache=XRefResolver(db)))
     importer.import_data(wb)
     if importer.has_errors:
-        _log_errors(importer.summarise_errors())
+        _log_errors(importer.summarise_errors(), *os.path.split(options['file']))
         print('View error log for details...')
 
 
-def _log_errors(message, log_dir=None):
+def _log_errors(message, log_dir=None, log_name=None):
     def get_freename(dir_path, filename):
         i, name, ext = 1, *os.path.splitext(filename)
         fullpath = os.path.join(dir_path, filename)
@@ -40,9 +41,10 @@ def _log_errors(message, log_dir=None):
             fullpath = os.path.join(dir_path, name + ('-%s' % i) + ext)
             i += 1
         return fullpath
-    
+
     log_dir = log_dir or os.getcwd()
-    fullpath = get_freename(log_dir, 'import-error.log')
+    log_name = log_name or 'import-error.log'
+    fullpath = get_freename(log_dir, log_name)
     with open(fullpath, 'w') as f:
         f.write(message)
         f.flush()
@@ -50,8 +52,8 @@ def _log_errors(message, log_dir=None):
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
-    print('usage: %s <config_uri> [var=value]\n'
-          '(example: "%s development.ini")' % (cmd, cmd))
+    print('usage: %s <config_uri> [file=value]\n'
+          '(example: "%s development.ini file=...")' % (cmd, cmd))
     sys.exit(1)
 
 

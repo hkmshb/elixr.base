@@ -5,7 +5,7 @@ from pyramid.security import Allow, Everyone, Authenticated
 
 class ACLResource(object):
     __acl__ = [
-        (Allow, Authenticated, 'api'),
+        (Allow, 'api:admin', 'api'),
     ]
 
     def __init__(self, request):

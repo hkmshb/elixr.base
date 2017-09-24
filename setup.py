@@ -72,5 +72,6 @@ setup(
     [console_scripts]
     initialize_gridix_db = gridix.scripts.initializedb:main
     import_gridix_data = gridix.scripts.importdt:main
+    manage_gridix_user = gridix.scripts.manage_user:main
     """
 )

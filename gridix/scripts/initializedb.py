@@ -37,7 +37,7 @@ def main(argv=sys.argv):
     with transaction.manager:
         db = get_tm_session(session_factory, transaction.manager)
 
-        ## make databae entries
+        ## make database entries
         # add default user
         user = User(username='manager', is_active=True)
         user.roles.append(Role(name='admin'))

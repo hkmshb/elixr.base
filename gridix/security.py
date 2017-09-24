@@ -1,10 +1,11 @@
-from pyramid.security import Allow, Authenticated, Everyone
+from pyramid.security import Allow, Everyone
+from elixr.sax.auth import User
 
 
 class ACLGridIX(object):
     __acl__ = [
         (Allow, Everyone, 'view'),
-        (Allow, Authenticated, 'edit')
+        (Allow, 'admin', 'edit')
     ]
 
     def __init__(self, request):
@@ -12,4 +13,7 @@ class ACLGridIX(object):
 
 
 def role_finder(userid, request):
-    return 'user'
+    user = request.db.query(User).filter_by(username=userid).first()
+    if user is not None:
+        return [r.name for r in user.roles]
+    return ''

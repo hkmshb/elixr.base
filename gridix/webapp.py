@@ -14,7 +14,6 @@ def main(global_config, **settings):
     """
     config = Configurator(
         settings=settings,
-        root_factory='.security.ACLGridIX',
         authorization_policy=ACLAuthorizationPolicy()
     )
 
@@ -40,7 +39,7 @@ def main(global_config, **settings):
 def set_multi_authentication_policy(config, settings):
     policy_tkt = AuthTktAuthenticationPolicy(settings['auth.secret_key'], callback=role_finder)
     policy_jwt = create_jwt_authentication_policy(config, callback=api_role_finder)
-    policy = MultiAuthenticationPolicy([policy_tkt, policy_tkt])
+    policy = MultiAuthenticationPolicy([policy_jwt, policy_tkt])
 
     ## extraced from pyramid_jwt
     def request_create_token(request, principal, expiration=None, **claims):
