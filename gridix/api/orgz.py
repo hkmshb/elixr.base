@@ -3,7 +3,7 @@ from cornice.resource import resource
 from elixr.sax.orgz import Organisation, PartyType
 from ..data.models.schemas import OrganisationSchema
 from ..data.filters import OrganisationFilterSchema
-from .utils import use_args_with, ACLResource
+from .security import use_args_with, ACLResource
 
 
 
@@ -14,7 +14,7 @@ class OrgResource(object):
     def __init__(self, request, context=None):
         self.request = request
         self.user = context
-    
+
     @use_args_with(OrganisationFilterSchema)
     def collection_get(self, filters):
         try:
@@ -22,14 +22,14 @@ class OrgResource(object):
             qry = self.request.db.query(Organisation).filter_by(**kw)
             if filters != None:
                 qry = qry.filter_by(**filters._as_dict())
-            
+
             qry = qry.order_by(Organisation.id)
             schema = OrganisationSchema(many=True)
             result = schema.dump(qry.all())
             return result.data
         except exc.NoResultFound as ex:
             self.request.errors.add('body', None, str(ex))
-    
+
     def collection_post(self):
         # note with ref to loads `partial` arg. `id` field is both primary_key 
         # foreign_key to Party. its being foreign_key makes it required during
@@ -48,7 +48,7 @@ class OrgResource(object):
 
         jresult = schema.dump(result.data)
         return jresult.data
-    
+
     def get(self):
         db = self.request.db
         kw = {'deleted': False, 'subtype': PartyType.organisation}
@@ -70,7 +70,7 @@ class OrgChildrenResource(object):
     def __init__(self, request, context=None):
         self.request = request
         self.context = context
-    
+
     @use_args_with(OrganisationFilterSchema)
     def collection_get(self, filters):
         db = self.request.db
@@ -87,7 +87,7 @@ class OrgChildrenResource(object):
             return jresult.data
         except exc.NoResultFound as ex:
             self.request.errors.add('body', None, str(ex))
-    
+
     def collection_post(self):
         db, schema = (self.request.db, OrganisationSchema())
         result = schema.load(self.request.json, db, partial=['id'])
@@ -100,7 +100,7 @@ class OrgChildrenResource(object):
 
         jresult = schema.dump(result.data)
         return jresult.data
-    
+
     def get(self):
         db = self.request.db
         kw = {'deleted': False, 'subtype': PartyType.organisation}
@@ -110,7 +110,7 @@ class OrgChildrenResource(object):
                 'parent_id': self.request.matchdict['parent_id'],
             })
             query = db.query(Organisation).filter_by(**kw)
-            schena = OrganisationSchema()
+            schema = OrganisationSchema()
             jresult = schema.dump(query.one())
             return jresult.data
         except exc.NoResultFound as ex:

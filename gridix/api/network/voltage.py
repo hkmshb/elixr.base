@@ -3,7 +3,7 @@ from cornice.resource import resource, view
 from ...data.models.schemas import VoltageSchema
 from ...data.models.network import Voltage
 from ...data.filters import VoltageFilterSchema
-from ..utils import use_args_with, ACLResource
+from ..security import use_args_with, ACLResource
 
 
 
@@ -14,7 +14,7 @@ class VoltageResource(object):
     def __init__(self, request, context=None):
         self.request = request
         self.user = context
-     
+
     @use_args_with(VoltageFilterSchema)
     def collection_get(self, args):
         try:
@@ -36,14 +36,14 @@ class VoltageResource(object):
         if result.errors:
             self.request.errors.add('body', 'voltage', result.errors)
             return
-        
+
         # save collected object
         db.add(result.data)
         db.flush()
 
         jresult = schema.dump(result.data)
         return jresult.data
-    
+
     def get(self):
         try:
             id = self.request.matchdict['id']
@@ -53,26 +53,26 @@ class VoltageResource(object):
             return jresult.data
         except exc.NoResultFound as ex:
             self.request.errors.add('body', None, str(ex))
-    
+
     def put(self):
         db, schema = (self.request.db, VoltageSchema())
         result = schema.load(self.request.json, db)
         if result.errors:
             self.request.errors.add('body', 'voltage', result.errors)
             return
-        
+
         # ensure resource exists
         upd_voltage = result.data
         try:
             voltage = db.query(Voltage).filter(Voltage.id == upd_voltage.id).one()
             voltage.value = upd_voltage.value
             db.flush()
-            
+
             jresult = schema.dump(voltage)
             return jresult.data
         except exc.NoResultFound as ex:
             self.request.errors.add('body', 'voltage', str(ex))
-    
+
     def delete(self):
         try:
             id = self.request.matchdict['id']

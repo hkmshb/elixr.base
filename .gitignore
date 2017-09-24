@@ -3,10 +3,11 @@ __pycache__/
 build/
 dist/
 
-.*
+[_.]*
 tags
 *.log
 *.todo
 *.sqlite
+!.pylintrc
 !.gitignore
 !.dockerignore

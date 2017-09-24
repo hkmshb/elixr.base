@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Log into GridIX.Web</h1>
+
+    <form class="form-inline" action="{{ url }}" method="post">
+        <div class="form-group inline-horizontal">
+            <input type="hidden" name="next" value="{{ next }}" />
+            <input type="text" class="form-control" name="username" placeholder="Username" value="{{ username }}" required />
+            <input type="password" class="form-control" name="password" placeholder="Password" value="{{ password }}" required />
+        </div>
+        <input type="submit" class="btn btn-primary" name="form.submitted" value="Log In" />
+    </form>
+{% endblock content %}

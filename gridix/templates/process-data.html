@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="header">
+        <h1 class="inline">GridIX.Web</h1> &nbsp;&nbsp;<h3 class="inline">Processing Import ...</h3>
+    </div>
+    <div class="col-xs-5 col-md-5 rm-lpad">
+        <form class="upload" method="post" enctype="multipart/form-data">
+            <p><b>Processing File: {{ filename[7:] }}</b></p>
+            <textarea class="form-control output" name="progress" rows=10 readonly></textarea>
+        </form>
+    </div>
+{% endblock content %}
+{% block script_extra -%}
+    <script>
+        var progressUrl = '{{ request.application_url }}/monitor/{{ filename }}';
+        function monitor_progress(args) {
+            var $out = $('.output')
+              , nargs = {key: args.key, filename: args.filename};
+            $.getJSON(progressUrl, args, function(data) {
+                $out.text($out.text() + '... ');
+                if (data.error == '') {
+                    if (!data.done) {
+                        setTimeout(function() {
+                            monitor_progress(nargs);
+                        }, 500);
+                    } else {
+                        $out.text($out.text() + '\nImport Complete.');
+                    }
+                } else {
+                    $out.text($out.text() + '\n\nError:\n' + data.error);
+                }
+            });
+        }
+        $(document).ready(function() {
+            var args = {key:'{{ key }}', filename:'{{ filename }}', percent:'{{ percent }}'}
+              , $out = $('.output');
+            setTimeout(function() {
+                $out.text('Reading file ... ... ... done.\n' +
+                          'Records import ... ... ... started.\n')
+                monitor_progress(args);
+            }, 500);
+        })
+    </script>
+{% endblock %}

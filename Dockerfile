@@ -34,13 +34,13 @@ RUN set -ex \
 
 # Copy application code to the container (make sure to create a .dockerignore 
 # file if any large files or directories should be excluded)
-RUN mkdir /code/
-WORKDIR /code/
-ADD . /code/
+RUN mkdir -p /app/code/
+WORKDIR /app/code/
+ADD . /app/code/
 
 # install other dependencies
-RUN /venv/bin/pip install /code/.libs/elixr.base*.whl \
- && /venv/bin/pip install /code/.libs/elixr.sax*.whl \
+RUN /venv/bin/pip install /app/code/.libs/elixr.base*.whl \
+ && /venv/bin/pip install /app/code/.libs/elixr.sax*.whl \
  && /venv/bin/pip install -e .
 
 # waitress will listen on this port

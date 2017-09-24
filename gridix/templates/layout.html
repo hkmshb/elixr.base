@@ -8,7 +8,9 @@
     <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
     <meta name="description" content="{% block meta_description %}{% endblock %}">
     {% block meta_extra %}{% endblock meta_extra %}
+    <link rel="stylesheet" href="{{ request.static_url('gridix:static/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ request.static_url('gridix:static/css/style.css') }}" />
+    {% block style_extra %}{% endblock style_extra %}
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -16,6 +18,32 @@
     <![endif]-->
 </head>
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
-    {% block content %}{% endblock content %}
+    <div class="container">
+        {% set show_bar = show_auth_bar if show_auth_bar is defined else True %}
+        {% if show_bar %}
+        <div class="auth-bar">
+            {% if request.authenticated_userid %}
+                {{ request.authenticated_userid }} | <a href="{{ 'logout' | route_url }}">Log out</a>
+            {% else %}
+                <a href="{{ 'login' | route_url }}">Login</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% set message = message if message is defined else None %}
+        {% if message %}
+        <div class="alert alert-dismissible alert-{{ alert_class|default("danger") }}">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ message }}
+        </div>
+        {% endif %}
+        
+        {% block content %}{% endblock content %}
+    </div>
+
+    <!-- le javascripts -->
+    <script src="{{ request.static_url('gridix:static/js/jquery-2.1.4.min.js') }}"></script>
+    <script src="{{ request.static_url('gridix:static/js/bootstrap.min.js') }}"></script>
+    {% block script_extra %}{% endblock script_extra %}
 </body>
 </html>

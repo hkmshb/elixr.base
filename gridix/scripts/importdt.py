@@ -54,14 +54,15 @@ def usage(argv):
           '(example: "%s development.ini")' % (cmd, cmd))
     sys.exit(1)
 
+
 def main(argv=sys.argv):
     if len(argv) < 2:
         usage(argv)
-        
+
     config_uri = argv[1]
     options = parse_vars(argv[2:])
     setup_logging(config_uri)
-    
+
     settings = get_appsettings(config_uri, options=options)
     session_factory = get_session_factory(get_engine(settings))
 

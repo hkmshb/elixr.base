@@ -2,7 +2,7 @@ from cornice.resource import resource
 from ...data.filters import ElectricLineFilterSchema
 from ...data.models.schemas import ElectricLineSchema
 from ...data.models.network import ElectricLine
-from ..utils import use_args_with, ACLResource
+from ..security import use_args_with, ACLResource
 
 
 
@@ -13,7 +13,7 @@ class ElectricLineResource(object):
     def __init__(self, request, context=None):
         self.request = request
         self.user = context
-    
+
     @use_args_with(ElectricLineFilterSchema)
     def collection_get(self, filters):
         try:
@@ -26,7 +26,7 @@ class ElectricLineResource(object):
             return result.data
         except Exception as ex:
             self.request.errors.add('body', None, str(ex))
-    
+
     def collection_post(self):
         db, schema = (self.request.db, ElectricLineSchema())
         result = schema.load(self.request.json, db)
@@ -39,7 +39,7 @@ class ElectricLineResource(object):
 
         jresult = schema.dump(result.data)
         return jresult.data
-    
+
     def get(self):
         try:
             id = self.request.matchdict['id']
@@ -61,7 +61,7 @@ class ElectricStationLinesResource(object):
     def __init__(self, request, context=None):
         self.request = request
         self.context = context
-    
+
     @use_args_with(ElectricLineFilterSchema)
     def collection_get(self, filters):
         try:
@@ -71,14 +71,14 @@ class ElectricStationLinesResource(object):
             )
             if filters != None:
                 qry = qry.filter_by(**filters._as_dict())
-            
+
             qry.order_by(ElectricLine.id)
             schema = ElectricLineSchema(many=True)
             jresult = schema.dump(qry.all())
             return jresult.data
         except Exception as ex:
             self.request.errors.add('body', None, str(ex))
-    
+
     def collection_post(self):
         db, schema = (self.request.db, ElectricLineSchema())
         result = schema.load(self.request.json, db)
@@ -101,4 +101,3 @@ class ElectricStationLinesResource(object):
             return jresult.data
         except Exception as ex:
             self.request.errors.add('body', None, str(ex))
-    

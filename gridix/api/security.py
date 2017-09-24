@@ -1,20 +1,20 @@
 from webargs.pyramidparser import use_args
-from pyramid.security import ALL_PERMISSIONS, Allow, Everyone, Authenticated
+from pyramid.security import Allow, Everyone, Authenticated
 
-
-
-def add_role_principals(userid, request):
-    roles = request.jwt_claims.get('roles', [])
-    return roles
 
 
 class ACLResource(object):
     __acl__ = [
         (Allow, Authenticated, 'api'),
     ]
-    
+
     def __init__(self, request):
         self.request = request
+
+
+def api_role_finder(userid, request):
+    roles = request.jwt_claims.get('roles', [])
+    return roles
 
 
 def use_args_with(schema_cls, schema_kwargs=None, **kwargs):
