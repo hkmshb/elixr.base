@@ -43,7 +43,7 @@ class TestResourceBase(object):
 
     def _get_auth_header(self, app):
         if self.API_TOKEN == None:
-            self.API_TOKEN = token = self._get_auth_token(app)
+            self.API_TOKEN = self._get_auth_token(app)
         return ('Authorization', 'JWT %s' % self.API_TOKEN)
 
     def _test_unauthn_collection_get_access_fails(self, args, endpoint):

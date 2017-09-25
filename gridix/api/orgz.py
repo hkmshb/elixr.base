@@ -31,16 +31,22 @@ class OrgResource(object):
             self.request.errors.add('body', None, str(ex))
 
     def collection_post(self):
-        # note with ref to loads `partial` arg. `id` field is both primary_key 
+        # note with ref to loads `partial` arg. `id` field is both primary_key &
         # foreign_key to Party. its being foreign_key makes it required during
-        # deserialization... but 1-to-1 between Party & Organisation means it
-        # gets value when Party is created thus with partial it gets ignored for
-        # deserialization...
+        # deserialization... but its 1-to-1 mapping between Party & Organisation
+        # means it gets value when Party is created thus with partial it gets
+        # ignored for deserialization...
         db, schema = (self.request.db, OrganisationSchema())
         result = schema.load(self.request.json, db, partial=['id'])
         if result.errors:
             self.request.errors.add('body', 'organisation', result.errors)
             return
+
+        # ensure only a single root org can be created
+        exists = db.query(Organisation).filter_by(parent_id=None).first()
+        if exists is not None and result.data.parent_id is None:
+            raise Exception('Invalid operation. Cannot create multiple root organisations.')
+
         # todo: use a service to verify and save object
         # save collected object
         db.add(result.data)

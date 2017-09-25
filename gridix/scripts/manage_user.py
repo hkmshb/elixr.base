@@ -26,7 +26,7 @@ def usage(argv):
 
 def _error(message, args=None):
     message = message if not args else message % args
-    print(message)
+    print(message + '\n')
     sys.exit(1)
 
 

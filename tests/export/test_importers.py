@@ -49,19 +49,19 @@ def imp_sl():
 
 
 class TestStationsLinesImporter(object):
-    
+
     def test_fails_for_missing_station_type(self, wb, imp_sl):
         imp_sl.errors.clear()
         imp_sl.sheet_name = 'stations-missing-type'
         imp_sl.import_data(wb)
         assert len(imp_sl.errors) == 1
-    
+
     def test_fails_for_invalid_station_type(self, wb, imp_sl):
         imp_sl.errors.clear()
         imp_sl.sheet_name = 'stations-invalid-type'
         imp_sl.import_data(wb)
         assert len(imp_sl.errors) == 1
-    
+
     def test_save_listed_stations(self, wb, imp_sl):
         imp_sl.errors.clear()
         imp_sl.sheet_name = 'stations'
@@ -69,7 +69,7 @@ class TestStationsLinesImporter(object):
         assert len(imp_sl.errors) == 0
         db = imp_sl.context['db']
         assert db.query(ElectricStation).count() == 2
-    
+
     def test_save_listed_stations_lines(self, wb, imp_sl):
         imp_sl.errors.clear()
         imp_sl.sheet_name = 'stations-lines-1'
