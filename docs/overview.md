@@ -26,8 +26,13 @@ A raw sample HTTP post request for authentication using the credentials above is
         "password": "gridix"
     }
 
-The response for a well-formed request returns json data with `result` and `token` (object) members. The `result` carries `OK` if the supplied credentials are valid and `token` carries the token to use for subsequent request. Should the credentials be invalid,
-the returned json data contains only the `result` with value `error: invalid username and/or password`.
+The response for a well-formed request returns json data with `result` and `token` (object) members. The `result` carries `OK` if the supplied credentials are valid and `token` carries the token to use for subsequent request. Should the credentials be invalid, the returned json data contains only the `result` with value `error: invalid username and/or password`.
+
+
+## Managing Users
+
+Users can be managed from the command line using the `manage_gridix_user` command. Available subcommands (termed task) are `list`, `add`, `del`, `change_passwd`.
+
 
 
 ## Making Request
@@ -71,3 +76,37 @@ Organisations  | description, fncode, identifier, name, parentId, dateEstablishe
 Voltages       | value
 Electric Lines | name, owner, lineCode, registerCode, subType *[feeder=1, upriser=2]*, voltageId, sourceStationId, dateCommissioned
 Electric Stations | name, owner, isPublic, isManned, isAutomated, facilityCode, registerCode, subType *[transmission=1, injection=2, distribution=3]*, organisationId, dateInstalled, sourceLineId 
+
+
+
+# GridIX.Web CLI Commands
+
+GridIX.Web at the moment barely exposes any UI other than for login and import. Management tasks have to be performed using the command-line interface (CLI). Available commands are described below:
+
+
+### initialize_gridix_db
+
+This creates the database schema for tables and relationships that is required for operating GridIX.Web. To run the command:
+
+    $ initialize_gridix_db <config_uri>
+    # example: initialize_gridix_db development.ini
+    
+    
+### import_gridix_data
+
+This imports data into the GridIX database from a specified Microsoft Excel document formated in a way as expected by the import engine. To run the command:
+
+	$ import_gridix_data <config_uri> [file=filepath-to-excel-file]
+    # example: import_gridix_data development.ini file=</path/to/excel-file.xlsx>
+    
+
+### manage_gridix_user
+
+This helps manage users for GridIX.Web. It supports listing, adding, deleting users as well as changing user password. To run the command:
+
+	$ manage_gridix_user <config_uri> task=(list|add|del|change_passwd) [username=...] [role=...] [password=...] [oldpassword=...]
+    ## examples:
+    # manage_gridix_user development.ini task=list
+    # manage_gridix_user development.ini task=add username=... password=...
+    # manage_gridix_user development.ini task=del username=...
+    # manage_gridix_user development.ini task=change_passwd username=... oldpassword=... password=...
