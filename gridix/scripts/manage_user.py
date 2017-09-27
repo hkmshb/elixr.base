@@ -18,9 +18,9 @@ from ..data.models import get_engine, get_session_factory, get_tm_session
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [task=(add|del|change_passwd|list)] '
-          '[username=] [role=] [password=] [password2=] [oldpassword=]\n'
+          '[username=...] [role=...] [password=...] [oldpassword=...]\n'
           '(example: "%s development.ini task=add username=... role=...'
-          ' password=*** password2=***")' % (cmd, cmd))
+          ' password=***")' % (cmd, cmd))
     sys.exit(1)
 
 
@@ -40,19 +40,19 @@ def _check_required_options(options, *fields):
 
 
 def _add_user(db, options):
-    _check_required_options(options, 'username', 'password', 'password2')
+    _check_required_options(options, 'username', 'password')
     username = options['username']
     password = options['password']
-    password2 = options['password2']
-    if password != password2:
-        _error('error: passwords mismatch')
-
     user = User(username=username, is_active=True)
     user.set_password(password)
     if 'role' in options:
-        role = options['role']
-        if role and role.strip() != '':
-            user.roles.append(Role(name=role))
+        role_name = options['role']
+        if role_name and role_name.strip() != '':
+            # check if role exists already
+            role = db.query(Role).filter_by(name=role_name).first()
+            if role is None:
+                role = Role(name=role_name)
+            user.roles.append(role)
 
     # ensure username is not taken
     exists = db.query(User).filter_by(username=username).first()
@@ -71,18 +71,21 @@ def _del_user(db, options):
 
 
 def _change_passwd(db, options):
-    _check_required_options(options, 'username', 'oldpassword', 'password', 'password2')
+    _check_required_options(options, 'username', 'password')
     username = options['username']
-    password = options['oldpassword']
     user = db.query(User).filter_by(username=username).first()
-    if user is None or not user.check_password(password):
+    if not user:
         _error('error: Invalid username and/or password')
 
-    password = options['password']
-    password2 = options['password2']
-    if password != password2:
-        _error('error: passwords mismatch')
+    opt_force = options.get('force', 'F').upper()
+    force = True if opt_force in ('TRUE', 'T', 'YES', 'Y') else False
+    if not force and user:
+        _check_required_options(options, 'oldpassword')
+        password = options['oldpassword']
+        if not user.check_password(password):
+            _error('error: Invalid username and/or password')
 
+    password = options['password']
     user.set_password(password)
     db.add(user)
 

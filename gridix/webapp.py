@@ -25,7 +25,7 @@ def main(global_config, **settings):
     config.include('.routes')
 
     # cornice & api configs
-    config.route_prefix = 'api/v0'
+    config.route_prefix = 'api/%s' % settings.get('api.version', 'v0')
     config.include('cornice')
 
     # json web tokens
