@@ -8,7 +8,7 @@ with open(os.path.join(here, 'README.md')) as f:
 with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
 
-VERSION = '0.0'
+VERSION = '0.1'
 
 requires = [
     'bcrypt',
@@ -26,8 +26,8 @@ requires = [
     'SQLAlchemy',
     'transaction',
     'zope.sqlalchemy',
-    'webargs',
     'waitress',
+    'webargs',
 
     # deps not on pypi
     'elixr.base',
